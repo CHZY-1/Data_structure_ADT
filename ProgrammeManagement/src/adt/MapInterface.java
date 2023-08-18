@@ -1,5 +1,7 @@
 package adt;
 
+//Author: Chan Zhi Yang
+
 public interface MapInterface<K, V> {
 
 
