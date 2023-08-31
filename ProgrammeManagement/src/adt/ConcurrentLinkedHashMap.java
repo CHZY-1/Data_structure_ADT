@@ -24,7 +24,11 @@ public class ConcurrentLinkedHashMap<K, V> implements MapInterface<K, V>{
     // Adds or updates a key-value pair in the map. If the key already exists, updates its associated value.
     @Override
     public V put(K key, V value) {
+
+        // Retrieve hash value from key
         int bucketIndex = getBucketIndex(key);
+
+        System.out.println("bucketIndex in put : " + bucketIndex);
 
         Entry<K, V> newEntry = new Entry<>(key, value);
 
@@ -34,6 +38,7 @@ public class ConcurrentLinkedHashMap<K, V> implements MapInterface<K, V>{
             int bucketSize = bucket.getNumberOfEntries();
             System.out.println("bucket.getNumberOfEntries() = " + bucket.getNumberOfEntries());
 
+            // check if the key already exist in the bucket, if yes, replace the value.
             for (int i = 0; i < bucketSize; i++) {
                 System.out.println("bucket.getEntry(i) = " + bucket.getEntry(i));
                 Entry<K, V> entry = bucket.getEntry(i);
@@ -46,13 +51,13 @@ public class ConcurrentLinkedHashMap<K, V> implements MapInterface<K, V>{
                 }
             }
 
-            bucket.add(newEntry);
-
-            System.out.println("bucket added");
+            System.out.println("NewEntry Value: " + newEntry.getValue());
+            boolean addSuccess = bucket.add(newEntry);
+            System.out.println("New entry added to the bucket: " + addSuccess);
+            bucket.toString();
+            System.out.println("bucket.getEntry(" + 0 + ") = " + bucket.getEntry(0));
 
         }
-
-        System.out.println(bucket.toString());
 
         return null;
     }
@@ -60,15 +65,27 @@ public class ConcurrentLinkedHashMap<K, V> implements MapInterface<K, V>{
     // Retrieves the value associated with the specified key.
     @Override
     public V getValue(K key) {
+
         int bucketIndex = getBucketIndex(key);
 
+        System.out.println("bucketIndex in getValue : " + bucketIndex);
+
         LinkedList<Entry<K, V>> bucket = buckets[bucketIndex];
+
         synchronized (bucket) {
             int bucketSize = bucket.getNumberOfEntries();
+            System.out.println("bucket Size" + bucketSize);
             for (int i = 0; i < bucketSize; i++) {
                 Entry<K, V> entry = bucket.getEntry(i);
-                if (entry != null && entry.getKey().equals(key)) {
-                    return entry.getValue();
+
+                if(entry != null) {
+
+                    System.out.println("Key :" + entry.getKey() + " Found in getValue()");
+                    System.out.println("Key :" + key + " parameter");
+                    // if the key in the linked list equals the parameter key.
+                    if (entry.getKey().equals(key)){
+                        return entry.getValue();
+                    }
                 }
             }
         }
@@ -189,12 +206,13 @@ public class ConcurrentLinkedHashMap<K, V> implements MapInterface<K, V>{
         }
     }
 
-    // Hash Function
+    // Get Hashed Value
     private int getBucketIndex(K key) {
         int hashCode = computeHashCode(key);
         return Math.abs(hashCode) % capacity;
     }
 
+    // Default Hash Function
     private int computeHashCode(K key) {
         if (key == null) {
             return 0;
@@ -224,6 +242,14 @@ public class ConcurrentLinkedHashMap<K, V> implements MapInterface<K, V>{
 
         public void setValue(V value) {
             this.value = value;
+        }
+
+        @Override
+        public String toString() {
+            return "Entry{" +
+                    "key=" + key +
+                    ", value=" + value +
+                    '}';
         }
     }
 }

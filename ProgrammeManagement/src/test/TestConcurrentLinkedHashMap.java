@@ -7,11 +7,13 @@ public class TestConcurrentLinkedHashMap {
     public static void main(String[] args) {
         ConcurrentLinkedHashMap<String, Integer> map = new ConcurrentLinkedHashMap<>(16);
 
-        System.out.println(map.put("one", 1));
+//        System.out.println(map.put("one", 1));
 //        map.put("two", 2);
 //        map.put("three", 3);
 
-        System.out.println("Value for key 'one': " + map.getValue("one"));
+//        System.out.println("Value for key 'one' before put: " + map.getValue("one"));
+        System.out.println(map.put("one", 1));
+        System.out.println("Value for key 'one' after put: " + map.getValue("one"));
 
 //        System.out.println("Value for key 'two': " + map.getOrDefault("two", 0));
 //

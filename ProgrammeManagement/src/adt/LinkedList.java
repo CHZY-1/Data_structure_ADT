@@ -26,7 +26,7 @@ public class LinkedList<T> implements ListInterface<T> {
   @Override
   public boolean add(T newEntry) {
     Node newNode = new Node(newEntry);	// create the new node
-
+    System.out.println("LinkedList new Node: " + newEntry);
     if (isEmpty()) {
       firstNode = newNode;
     } else {                        // add to end of nonempty list
@@ -38,6 +38,8 @@ public class LinkedList<T> implements ListInterface<T> {
     }
 
     numberOfEntries++;
+
+    System.out.println("Number of entries: " + numberOfEntries);
     return true;
   }
 
