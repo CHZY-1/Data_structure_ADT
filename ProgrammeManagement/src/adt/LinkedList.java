@@ -1,8 +1,10 @@
 package adt;
 
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+
 /**
  * Chapter 5 Sample Code
- *
  * LinkedList.java A class that implements the ADT list by using a chain of nodes,
  with the node implemented as an inner class.
  */
@@ -166,6 +168,76 @@ public class LinkedList<T> implements ListInterface<T> {
     }
     return outputStr;
   }
+
+
+  // Iterator Function
+  public LinkedListIterator iterator() {
+    return new LinkedListIterator();
+  }
+
+  private class LinkedListIterator implements Iterator<T> {
+    private Node currentNode;            // Current node being pointed by the iterator
+    private Node lastReturnedNode;      // Keep track of the last returned node
+
+    /**
+     * Constructor for the LinkedListIterator.
+     * Initializes the iterator to start from the first node.
+     */
+    public LinkedListIterator() {
+      currentNode = firstNode;
+      lastReturnedNode = null;
+    }
+
+    /**
+     * Checks if there is a next node in the linked list.
+     *
+     * @return true if there is a next node, false otherwise.
+     */
+    public boolean hasNext() {
+      return currentNode != null;
+    }
+
+    /**
+     * Moves the iterator to the next node and returns the data of the current node.
+     *
+     * @return the data of the current node.
+     * @throws NoSuchElementException if there is no next node.
+     */
+    public T next() {
+      if (!hasNext()) {
+        throw new NoSuchElementException();
+      }
+      T data = currentNode.data;
+      lastReturnedNode = currentNode; // Save the last returned node
+      currentNode = currentNode.next;
+      return data;
+    }
+
+    /**
+     * Removes the last returned node from the linked list.
+     * Can only be called after the next() method.
+     *
+     * @throws IllegalStateException if remove() is called without a preceding next() call.
+     */
+    public void remove() {
+      if (lastReturnedNode == null) {
+        throw new IllegalStateException("remove() can only be called after next()");
+      }
+
+      if (lastReturnedNode == firstNode) {
+        firstNode = firstNode.next;
+      } else {
+        Node nodeBefore = firstNode;
+        while (nodeBefore.next != lastReturnedNode) {
+          nodeBefore = nodeBefore.next;
+        }
+        nodeBefore.next = lastReturnedNode.next;
+      }
+
+      lastReturnedNode = null; // Reset lastReturnedNode
+    }
+  }
+
 
   private class Node {
 
