@@ -1,10 +1,11 @@
 package adt;
 
 //Author: Chan Zhi Yang
+import java.io.Serializable;
 import java.util.Iterator;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class ConcurrentLinkedHashMap<K, V> implements MapInterface<K, V>{
+public class ConcurrentLinkedHashMap<K, V> implements MapInterface<K, V>, Serializable {
 
     private final LinkedList<Entry<K, V>>[] buckets;
     private final int capacity;
@@ -211,7 +212,7 @@ public class ConcurrentLinkedHashMap<K, V> implements MapInterface<K, V>{
 
 
     // Entry class to store key-value pairs
-    private static class Entry<K, V> {
+    private static class Entry<K, V> implements java.io.Serializable{
         private K key;
         private V value;
 
