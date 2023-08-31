@@ -3,6 +3,7 @@ package adt;
 //Author: Chan Zhi Yang
 import java.io.Serializable;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class ConcurrentLinkedHashMap<K, V> implements MapInterface<K, V>, Serializable {
@@ -231,13 +232,7 @@ public class ConcurrentLinkedHashMap<K, V> implements MapInterface<K, V>, Serial
 
     @Override
     public int size() {
-        int totalSize = 0;
-        for (LinkedList<Entry<K, V>> bucket : buckets) {
-            synchronized (bucket) {
-                totalSize += bucket.getNumberOfEntries();
-            }
-        }
-        return totalSize;
+        return totalNumberOfEntries;
     }
 
     @Override
@@ -265,12 +260,13 @@ public class ConcurrentLinkedHashMap<K, V> implements MapInterface<K, V>, Serial
         }
     }
 
-    public int getTotalNumberOfEntries(){
-        return totalNumberOfEntries;
+    public int getTotalCapacity(){
+        return capacity;
     }
 
-    //    Rehash the map when load factor threshold is exceeded
+    //    Rehash the map when load factor exceed threshold
     private void rehash() {
+        System.out.println("Rehashing");
         int newCapacity = capacity * 2;
 
         LinkedList<Entry<K, V>>[] newBuckets = new LinkedList[newCapacity];
@@ -291,16 +287,21 @@ public class ConcurrentLinkedHashMap<K, V> implements MapInterface<K, V>, Serial
                 // get entry in the current node
                 Entry<K, V> entry = iterator.next();
 
+                // Calculate the new bucket index using the updated hash code
                 int newBucketIndex = Math.abs(entry.getKey().hashCode()) % newCapacity;
+
+//                System.out.println("old hash value : " + entry.getKey() + "; new hash value : " + newBucketIndex);
                 LinkedList<Entry<K, V>> newBucket = newBuckets[newBucketIndex];
                 ReentrantLock newLock = newLocks[newBucketIndex];
 
+                // Lock it, add entry to the new bucket, after that unlock it.
                 newLock.lock();
                 try {
                     newBucket.add(entry);
                 } finally {
                     newLock.unlock();
                 }
+
             }
         }
 
@@ -329,6 +330,51 @@ public class ConcurrentLinkedHashMap<K, V> implements MapInterface<K, V>, Serial
         return key.hashCode();
     }
 
+
+    // Iterator
+    public Iterator<K> iteratorWithKeys() {
+        return new LinkedHashMapIterator();
+    }
+
+    private class LinkedHashMapIterator implements Iterator<K>, Serializable {
+        private int currentBucketIndex;
+        private Iterator<Entry<K, V>> currentBucketIterator;
+
+        public LinkedHashMapIterator() {
+            currentBucketIndex = 0;
+            moveToNextBucket();
+        }
+
+        private void moveToNextBucket() {
+            while (currentBucketIndex < capacity) {
+                currentBucketIterator = buckets[currentBucketIndex].iterator();
+
+                // found non empty bucket
+                if (currentBucketIterator.hasNext()) {
+                    return;
+                }
+                currentBucketIndex++;
+            }
+        }
+
+        @Override
+        public boolean hasNext() {
+            return currentBucketIndex < capacity;
+        }
+
+        @Override
+        public K next() {
+            if (!hasNext()) {
+                throw new NoSuchElementException();
+            }
+            Entry<K, V> entry = currentBucketIterator.next();
+            if (!currentBucketIterator.hasNext()) {
+                currentBucketIndex++; // Move to the next bucket
+                moveToNextBucket(); // Move to the next non-empty bucket
+            }
+            return entry.getKey();
+        }
+    }
 
     // Entry class to store key-value pairs
     private static class Entry<K, V> implements java.io.Serializable{
