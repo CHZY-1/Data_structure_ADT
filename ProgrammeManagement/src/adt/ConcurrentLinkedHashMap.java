@@ -7,32 +7,95 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class ConcurrentLinkedHashMap<K, V> implements MapInterface<K, V>, Serializable {
 
-    private final LinkedList<Entry<K, V>>[] buckets;
-    private final int capacity;
-    private final ReentrantLock[] locks;
+    private static final int DEFAULT_CAPACITY = 31;
+    private static final float DEFAULT_LOAD_FACTOR = 0.75f;
 
-    // Constructor
+    private LinkedList<Entry<K, V>>[] buckets;
+    private ReentrantLock[] locks;
+    private int capacity;
+    private float loadFactor;
+
+    private int totalNumberOfEntries;
+
+    // Default constructor
+    public ConcurrentLinkedHashMap() {
+        this(DEFAULT_CAPACITY, DEFAULT_LOAD_FACTOR);
+    }
+
+    // Constructor with custom capacity
     public ConcurrentLinkedHashMap(int capacity) {
+        this(capacity, DEFAULT_LOAD_FACTOR);
+    }
+
+    // Constructor with custom capacity and load factor
+    public ConcurrentLinkedHashMap(int capacity, float loadFactor) {
+        if (capacity <= 0 || loadFactor <= 0) {
+            throw new IllegalArgumentException("Capacity and load factor must be positive");
+        }
+
+        if (!isPrime(capacity)) {
+            //Prime number to reduce the chance of collision
+            System.out.println("Warning: Capacity is not a prime number. Consider using a prime number for better performance.");
+        }
+
+
+
         this.capacity = capacity;
-        this.buckets = new LinkedList[capacity];
-        this.locks = new ReentrantLock[capacity];
+        this.loadFactor = loadFactor;
+        this.buckets = createBucketArray(capacity);
+        this.locks = createLockArray(capacity);
+    }
+
+    private boolean isPrime(int number) {
+        if (number <= 1) {
+            return false;
+        }
+        if (number <= 3) {
+            return true;
+        }
+        if (number % 2 == 0 || number % 3 == 0) {
+            return false;
+        }
+        for (int i = 5; i * i <= number; i += 6) {
+            if (number % i == 0 || number % (i + 2) == 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+
+    // Private method to create the bucket array
+    private LinkedList<Entry<K, V>>[] createBucketArray(int capacity) {
+        LinkedList<Entry<K, V>>[] buckets = new LinkedList[capacity];
         for (int i = 0; i < capacity; i++) {
             buckets[i] = new LinkedList<>();
+        }
+        return buckets;
+    }
+
+    // Private method to create the lock array
+    private ReentrantLock[] createLockArray(int capacity) {
+        ReentrantLock[] locks = new ReentrantLock[capacity];
+        for (int i = 0; i < capacity; i++) {
             locks[i] = new ReentrantLock();
         }
+        return locks;
     }
+
 
     // Adds or updates a key-value pair in the map. If the key already exists, updates its associated value.
     @Override
     public V put(K key, V value) {
-        int bucketIndex = getBucketIndex(key);
-//        System.out.println("Hash Value in put method : " + bucketIndex);
 
+        int bucketIndex = getBucketIndex(key);
         Entry<K, V> newEntry = new Entry<>(key, value);
 
         LinkedList<Entry<K, V>> bucket = buckets[bucketIndex];
+        ReentrantLock lock = locks[bucketIndex];
 
-        synchronized (bucket) {
+        lock.lock();
+        try {
             boolean keyExists = false;
 
             Iterator<Entry<K, V>> iterator = bucket.iterator();
@@ -49,7 +112,15 @@ public class ConcurrentLinkedHashMap<K, V> implements MapInterface<K, V>, Serial
 
             if (!keyExists) {
                 bucket.add(newEntry);
+                totalNumberOfEntries++;;
+
+                // Check if needed to do rehashing
+                if ((float) totalNumberOfEntries / capacity > loadFactor) {
+                    rehash();
+                }
             }
+        } finally {
+            lock.unlock();
         }
 
         return null;
@@ -112,6 +183,7 @@ public class ConcurrentLinkedHashMap<K, V> implements MapInterface<K, V>, Serial
                 Entry<K, V> entry = iterator.next();
                 if (entry != null && entry.getKey().equals(key)) {
                     iterator.remove();
+                    totalNumberOfEntries--;
                     return entry.getValue();
                 }
             }
@@ -193,9 +265,56 @@ public class ConcurrentLinkedHashMap<K, V> implements MapInterface<K, V>, Serial
         }
     }
 
+    public int getTotalNumberOfEntries(){
+        return totalNumberOfEntries;
+    }
+
+    //    Rehash the map when load factor threshold is exceeded
+    private void rehash() {
+        int newCapacity = capacity * 2;
+
+        LinkedList<Entry<K, V>>[] newBuckets = new LinkedList[newCapacity];
+        ReentrantLock[] newLocks = new ReentrantLock[newCapacity];
+
+        for (int i = 0; i < newCapacity; i++) {
+            newBuckets[i] = new LinkedList<>();
+            newLocks[i] = new ReentrantLock();
+        }
+
+        // Iterate every bucket in hash map
+        for (LinkedList<Entry<K, V>> bucket : buckets) {
+            Iterator<Entry<K, V>> iterator = bucket.iterator();
+
+            // Iterate the linked list in the bucket
+            while (iterator.hasNext()) {
+
+                // get entry in the current node
+                Entry<K, V> entry = iterator.next();
+
+                int newBucketIndex = Math.abs(entry.getKey().hashCode()) % newCapacity;
+                LinkedList<Entry<K, V>> newBucket = newBuckets[newBucketIndex];
+                ReentrantLock newLock = newLocks[newBucketIndex];
+
+                newLock.lock();
+                try {
+                    newBucket.add(entry);
+                } finally {
+                    newLock.unlock();
+                }
+            }
+        }
+
+        // Update the buckets and locks arrays
+        this.buckets = newBuckets;
+        this.locks = newLocks;
+        this.capacity = newCapacity;
+    }
+
     // Get Hashed Value
     private int getBucketIndex(K key) {
         int hashCode = computeHashCode(key);
+
+        // adjust hash value to fit within the bounds of array size
         return Math.abs(hashCode) % capacity;
     }
 

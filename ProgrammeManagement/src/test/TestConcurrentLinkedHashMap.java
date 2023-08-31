@@ -6,7 +6,7 @@ public class TestConcurrentLinkedHashMap {
 
     public static void main(String[] args) {
 
-        ConcurrentLinkedHashMap<String, Integer> map = new ConcurrentLinkedHashMap<>(16);
+        ConcurrentLinkedHashMap<String, Integer> map = new ConcurrentLinkedHashMap<>(11);
 
         // Test Add and Get methods
         System.out.println("\n Test Add");
@@ -40,6 +40,7 @@ public class TestConcurrentLinkedHashMap {
         // Test Remove operation
         System.out.println("\n Test Remove");
         System.out.println("=================================");
+
         map.put("fifth", 5);
         System.out.println("Value for key 'two' after remove: " + map.getValue("fifth"));
         map.remove("fifth");

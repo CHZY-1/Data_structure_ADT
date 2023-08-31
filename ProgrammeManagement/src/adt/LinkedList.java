@@ -214,6 +214,10 @@ public class LinkedList<T> implements ListInterface<T> {
       return data;
     }
 
+    public T getCurrent() {
+      return currentNode.data;
+    }
+
     /**
      * Removes the last returned node from the linked list.
      * Can only be called after the next() method.
@@ -235,7 +239,8 @@ public class LinkedList<T> implements ListInterface<T> {
         nodeBefore.next = lastReturnedNode.next;
       }
 
-      lastReturnedNode = null; // Reset lastReturnedNode
+      // Reset lastReturnedNode
+      lastReturnedNode = null;
     }
   }
 
