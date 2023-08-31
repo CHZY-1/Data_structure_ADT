@@ -24,68 +24,44 @@ public class ConcurrentLinkedHashMap<K, V> implements MapInterface<K, V>{
     // Adds or updates a key-value pair in the map. If the key already exists, updates its associated value.
     @Override
     public V put(K key, V value) {
-
-        // Retrieve hash value from key
         int bucketIndex = getBucketIndex(key);
-
-        System.out.println("bucketIndex in put : " + bucketIndex);
-
         Entry<K, V> newEntry = new Entry<>(key, value);
 
         LinkedList<Entry<K, V>> bucket = buckets[bucketIndex];
 
         synchronized (bucket) {
-            int bucketSize = bucket.getNumberOfEntries();
-            System.out.println("bucket.getNumberOfEntries() = " + bucket.getNumberOfEntries());
+            boolean keyExists = false;
 
-            // check if the key already exist in the bucket, if yes, replace the value.
-            for (int i = 0; i < bucketSize; i++) {
-                System.out.println("bucket.getEntry(i) = " + bucket.getEntry(i));
-                Entry<K, V> entry = bucket.getEntry(i);
+            Iterator<Entry<K, V>> iterator = bucket.iterator();
+            while (iterator.hasNext()) {
+                Entry<K, V> entry = iterator.next();
 
-                System.out.println(" entry.getKey().equals(key) = " + entry.getKey().equals(key));
                 if (entry.getKey().equals(key)) {
                     V oldValue = entry.getValue();
                     entry.setValue(value);
+                    keyExists = true;
                     return oldValue;
                 }
             }
 
-            System.out.println("NewEntry Value: " + newEntry.getValue());
-            boolean addSuccess = bucket.add(newEntry);
-            System.out.println("New entry added to the bucket: " + addSuccess);
-            bucket.toString();
-            System.out.println("bucket.getEntry(" + 0 + ") = " + bucket.getEntry(0));
-
+            if (!keyExists) {
+                bucket.add(newEntry);
+            }
         }
 
         return null;
     }
 
-    // Retrieves the value associated with the specified key.
-    @Override
     public V getValue(K key) {
-
         int bucketIndex = getBucketIndex(key);
 
-        System.out.println("bucketIndex in getValue : " + bucketIndex);
-
         LinkedList<Entry<K, V>> bucket = buckets[bucketIndex];
-
         synchronized (bucket) {
-            int bucketSize = bucket.getNumberOfEntries();
-            System.out.println("bucket Size" + bucketSize);
-            for (int i = 0; i < bucketSize; i++) {
-                Entry<K, V> entry = bucket.getEntry(i);
-
-                if(entry != null) {
-
-                    System.out.println("Key :" + entry.getKey() + " Found in getValue()");
-                    System.out.println("Key :" + key + " parameter");
-                    // if the key in the linked list equals the parameter key.
-                    if (entry.getKey().equals(key)){
-                        return entry.getValue();
-                    }
+            Iterator<Entry<K, V>> iterator = bucket.iterator();
+            while (iterator.hasNext()) {
+                Entry<K, V> entry = iterator.next();
+                if (entry.getKey().equals(key)) {
+                    return entry.getValue();
                 }
             }
         }

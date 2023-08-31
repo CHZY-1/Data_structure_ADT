@@ -11,8 +11,8 @@ public class TestConcurrentLinkedHashMap {
 //        map.put("two", 2);
 //        map.put("three", 3);
 
-//        System.out.println("Value for key 'one' before put: " + map.getValue("one"));
-        System.out.println(map.put("one", 1));
+        System.out.println("Value for key 'one' before put: " + map.getValue("one"));
+        map.put("one", 1);
         System.out.println("Value for key 'one' after put: " + map.getValue("one"));
 
 //        System.out.println("Value for key 'two': " + map.getOrDefault("two", 0));
