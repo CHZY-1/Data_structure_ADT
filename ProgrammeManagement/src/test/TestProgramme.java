@@ -18,6 +18,7 @@ public class TestProgramme {
 
         // Add tutorial groups to programs
         program1.addTutorialGroup(group1);
+        program1.addTutorialGroup(group2);
         program2.addTutorialGroup(group2);
 
         // List all programs
