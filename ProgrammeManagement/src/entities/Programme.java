@@ -66,6 +66,15 @@ public class Programme {
     public void setTutorialGroups(LinkedList<TutorialGroup> tutorialGroups) {
         this.tutorialGroups = tutorialGroups;
     }
+
+    @Override
+    public String toString() {
+        return "Programme{" +
+                "programmeCode='" + programmeCode + '\'' +
+                ", programmeName='" + programmeName + '\'' +
+                ", tutorialGroupsNumOfEntries=" + tutorialGroups.getNumberOfEntries() +
+                '}';
+    }
 }
 
 
