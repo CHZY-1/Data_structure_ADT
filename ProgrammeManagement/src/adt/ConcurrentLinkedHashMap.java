@@ -113,7 +113,7 @@ public class ConcurrentLinkedHashMap<K, V> implements MapInterface<K, V>, Serial
 
             if (!keyExists) {
                 bucket.add(newEntry);
-                totalNumberOfEntries++;;
+                totalNumberOfEntries++;
 
                 // Check if needed to do rehashing
                 if ((float) totalNumberOfEntries / capacity > loadFactor) {
@@ -349,7 +349,7 @@ public class ConcurrentLinkedHashMap<K, V> implements MapInterface<K, V>, Serial
             while (currentBucketIndex < capacity) {
                 currentBucketIterator = buckets[currentBucketIndex].iterator();
 
-                // found non empty bucket
+                // found non-empty bucket
                 if (currentBucketIterator.hasNext()) {
                     return;
                 }
