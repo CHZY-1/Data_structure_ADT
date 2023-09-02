@@ -1,6 +1,8 @@
 package test;
+
 import adt.ConcurrentHashMapWithLinkedLists;
 
+//Author: Chan Zhi Yang
 
 public class TestConcurrentHashMapWithLinkedList {
 

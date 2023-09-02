@@ -1,4 +1,7 @@
 package test;
+
+//Author: Chan Zhi Yang
+
 import adt.ConcurrentHashMapWithLinkedLists;
 
 import java.util.Iterator;

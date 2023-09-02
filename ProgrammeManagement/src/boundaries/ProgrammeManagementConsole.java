@@ -288,7 +288,7 @@ public class ProgrammeManagementConsole{
         programmeManagement.generateReport();
     }
 
-    
+
     public static void main(String[] args) {
         ProgrammeManagementConsole ui = new ProgrammeManagementConsole();
         ui.start();
