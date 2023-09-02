@@ -20,8 +20,8 @@ public class Programme {
         this.tutorialGroups = new LinkedList<>();
     }
 
-    public void addTutorialGroup(TutorialGroup tutorialGroup) {
-        tutorialGroups.add(tutorialGroup);
+    public boolean addTutorialGroup(TutorialGroup tutorialGroup) {
+        return tutorialGroups.add(tutorialGroup);
     }
 
     public TutorialGroup removeTutorialGroup(String groupID) {
@@ -69,11 +69,11 @@ public class Programme {
 
     @Override
     public String toString() {
-        return "Programme{" +
-                "programmeCode='" + programmeCode + '\'' +
-                ", programmeName='" + programmeName + '\'' +
-                ", tutorialGroupsNumOfEntries=" + tutorialGroups.getNumberOfEntries() +
-                '}';
+        return "Programme { " +
+                "Programme Code : '" + programmeCode + '\'' +
+                ", Programme Name : '" + programmeName + '\'' +
+                ", Number of Tutorial Group : " + tutorialGroups.getNumberOfEntries() +
+                " } ";
     }
 }
 

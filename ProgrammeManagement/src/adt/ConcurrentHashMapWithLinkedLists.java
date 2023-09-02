@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class ConcurrentLinkedHashMap<K, V> implements MapInterface<K, V>, Serializable {
+public class ConcurrentHashMapWithLinkedLists<K, V> implements MapInterface<K, V>, Serializable {
 
     private static final int DEFAULT_CAPACITY = 31;
     private static final float DEFAULT_LOAD_FACTOR = 0.75f;
@@ -14,22 +14,22 @@ public class ConcurrentLinkedHashMap<K, V> implements MapInterface<K, V>, Serial
     private LinkedList<Entry<K, V>>[] buckets;
     private ReentrantLock[] locks;
     private int capacity;
-    private float loadFactor;
+    private final float loadFactor;
 
     private int totalNumberOfEntries;
 
     // Default constructor
-    public ConcurrentLinkedHashMap() {
+    public ConcurrentHashMapWithLinkedLists() {
         this(DEFAULT_CAPACITY, DEFAULT_LOAD_FACTOR);
     }
 
     // Constructor with custom capacity
-    public ConcurrentLinkedHashMap(int capacity) {
+    public ConcurrentHashMapWithLinkedLists(int capacity) {
         this(capacity, DEFAULT_LOAD_FACTOR);
     }
 
     // Constructor with custom capacity and load factor
-    public ConcurrentLinkedHashMap(int capacity, float loadFactor) {
+    public ConcurrentHashMapWithLinkedLists(int capacity, float loadFactor) {
         if (capacity <= 0 || loadFactor <= 0) {
             throw new IllegalArgumentException("Capacity and load factor must be positive");
         }
@@ -38,8 +38,6 @@ public class ConcurrentLinkedHashMap<K, V> implements MapInterface<K, V>, Serial
             //Prime number to reduce the chance of collision
             System.out.println("Warning: Capacity is not a prime number. Consider using a prime number for better performance.");
         }
-
-
 
         this.capacity = capacity;
         this.loadFactor = loadFactor;
@@ -97,7 +95,6 @@ public class ConcurrentLinkedHashMap<K, V> implements MapInterface<K, V>, Serial
 
         lock.lock();
         try {
-            boolean keyExists = false;
 
             Iterator<Entry<K, V>> iterator = bucket.iterator();
             while (iterator.hasNext()) {
@@ -106,20 +103,19 @@ public class ConcurrentLinkedHashMap<K, V> implements MapInterface<K, V>, Serial
                 if (entry.getKey().equals(key)) {
                     V oldValue = entry.getValue();
                     entry.setValue(value);
-                    keyExists = true;
                     return oldValue;
                 }
             }
 
-            if (!keyExists) {
-                bucket.add(newEntry);
-                totalNumberOfEntries++;
 
-                // Check if needed to do rehashing
-                if ((float) totalNumberOfEntries / capacity > loadFactor) {
-                    rehash();
-                }
+            bucket.add(newEntry);
+            totalNumberOfEntries++;
+
+            // Check if needed to do rehashing
+            if ((float) totalNumberOfEntries / capacity > loadFactor) {
+                rehash();
             }
+
         } finally {
             lock.unlock();
         }
@@ -132,7 +128,7 @@ public class ConcurrentLinkedHashMap<K, V> implements MapInterface<K, V>, Serial
 //        System.out.println("Hash Value in getValue method : " + bucketIndex);
 
         LinkedList<Entry<K, V>> bucket = buckets[bucketIndex];
-        synchronized (bucket) {
+        synchronized (buckets[bucketIndex]) {
             Iterator<Entry<K, V>> iterator = bucket.iterator();
             while (iterator.hasNext()) {
                 Entry<K, V> entry = iterator.next();
@@ -158,7 +154,7 @@ public class ConcurrentLinkedHashMap<K, V> implements MapInterface<K, V>, Serial
 //        System.out.println("Hash Value in replace method : " + bucketIndex);
 
         LinkedList<Entry<K, V>> bucket = buckets[bucketIndex];
-        synchronized (bucket) {
+        synchronized (buckets[bucketIndex]) {
             Iterator<Entry<K, V>> iterator = bucket.iterator();
 
             while (iterator.hasNext()) {
@@ -178,13 +174,19 @@ public class ConcurrentLinkedHashMap<K, V> implements MapInterface<K, V>, Serial
         int bucketIndex = getBucketIndex(key);
 
         LinkedList<Entry<K, V>> bucket = buckets[bucketIndex];
-        synchronized (bucket) {
+        synchronized (buckets[bucketIndex]) {
             Iterator<Entry<K, V>> iterator = bucket.iterator();
             while (iterator.hasNext()) {
                 Entry<K, V> entry = iterator.next();
                 if (entry != null && entry.getKey().equals(key)) {
                     iterator.remove();
                     totalNumberOfEntries--;
+
+                    if (bucket.isEmpty()) {
+                        // Reinitialize the bucket
+                        buckets[bucketIndex] = new LinkedList<>();
+                    }
+
                     return entry.getValue();
                 }
             }
@@ -198,7 +200,7 @@ public class ConcurrentLinkedHashMap<K, V> implements MapInterface<K, V>, Serial
         int bucketIndex = getBucketIndex(key);
 
         LinkedList<Entry<K, V>> bucket = buckets[bucketIndex];
-        synchronized (bucket) {
+        synchronized (buckets[bucketIndex]) {
 
             Iterator<Entry<K, V>> iterator = bucket.iterator();
             while (iterator.hasNext()) {
@@ -246,8 +248,7 @@ public class ConcurrentLinkedHashMap<K, V> implements MapInterface<K, V>, Serial
 
     @Override
     public void copy(MapInterface<K, V> destination) {
-        if (destination instanceof ConcurrentLinkedHashMap) {
-            ConcurrentLinkedHashMap<K, V> destMap = (ConcurrentLinkedHashMap<K, V>) destination;
+        if (destination instanceof ConcurrentHashMapWithLinkedLists<K, V> destMap) {
             for (LinkedList<Entry<K, V>> bucket : buckets) {
                 synchronized (bucket) {
                     Iterator<Entry<K, V>> iterator = bucket.iterator();

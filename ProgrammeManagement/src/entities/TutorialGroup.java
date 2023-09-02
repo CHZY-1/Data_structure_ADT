@@ -43,10 +43,10 @@ public class TutorialGroup{
 
     @Override
     public String toString() {
-        return "TutorialGroup{" +
-                "groupCode='" + groupID + '\'' +
-                ", groupName='" + groupName + '\'' +
-                ", studyYear='" + studyYear + '\'' +
-                '}';
+        return "TutorialGroup { " +
+                " Group Code : '" + groupID + '\'' +
+                ", Group Name : '" + groupName + '\'' +
+                ", Study Year : '" + studyYear + '\'' +
+                " } ";
     }
 }

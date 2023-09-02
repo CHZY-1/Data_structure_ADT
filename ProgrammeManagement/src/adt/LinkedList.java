@@ -5,8 +5,10 @@ import java.util.NoSuchElementException;
 
 /**
  * Chapter 5 Sample Code
- * LinkedList.java A class that implements the ADT list by using a chain of nodes,
- with the node implemented as an inner class.
+ * LinkedList.java A class that implements the ADT list by using a chain of nodes, with the node implemented as an inner class.
+ *
+ * Added Iterator
+ *
  */
 public class LinkedList<T> implements ListInterface<T> {
 
@@ -31,10 +33,19 @@ public class LinkedList<T> implements ListInterface<T> {
       firstNode = newNode;
     } else {                        // add to end of nonempty list
       Node currentNode = firstNode;	// traverse linked list with p pointing to the current node
+
+//      System.out.println("CurrentNode : " + currentNode);
+//      System.out.println(newEntry);
+//      System.out.println(isEmpty());
+
       while (currentNode.next != null) { // while have not reached the last node
-        currentNode = currentNode.next;
+        currentNode = currentNode.next; // this line encountered problem
       }
-      currentNode.next = newNode; // make last node reference new node
+
+      if (currentNode != null) {
+        currentNode.next = newNode; // make last node reference new node
+      }
+
     }
 
     numberOfEntries++;
@@ -230,18 +241,35 @@ public class LinkedList<T> implements ListInterface<T> {
       }
 
       if (lastReturnedNode == firstNode) {
+        // Special case: removing the first node
         firstNode = firstNode.next;
+
+        // Update lastReturnedNode to the new first node
+        lastReturnedNode = firstNode;
       } else {
         Node nodeBefore = firstNode;
         while (nodeBefore.next != lastReturnedNode) {
           nodeBefore = nodeBefore.next;
         }
-        nodeBefore.next = lastReturnedNode.next;
+
+        // Update lastReturnedNode to the next node
+        lastReturnedNode = lastReturnedNode.next;
+
+        // Reset the node
+        if (lastReturnedNode == null) {
+          // The lastReturnedNode is the last node in the list
+          // Update nodeBefore.next to null
+          nodeBefore.next = null;
+        } else {
+          // There are nodes after lastReturnedNode
+          nodeBefore.next = lastReturnedNode;
+        }
       }
 
-      // Reset lastReturnedNode
+      numberOfEntries--;
       lastReturnedNode = null;
     }
+
   }
 
 

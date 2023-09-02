@@ -4,7 +4,6 @@ package adt;
 
 public interface MapInterface<K, V> {
 
-
     /**
      * Adds a new key-value pair to the map. If the key already exists in the map,
      * the associated value is updated.

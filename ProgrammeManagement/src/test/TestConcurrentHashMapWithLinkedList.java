@@ -1,12 +1,12 @@
 package test;
-import adt.ConcurrentLinkedHashMap;
+import adt.ConcurrentHashMapWithLinkedLists;
 
 
-public class TestConcurrentLinkedHashMap {
+public class TestConcurrentHashMapWithLinkedList {
 
     public static void main(String[] args) {
 
-        ConcurrentLinkedHashMap<String, Integer> map = new ConcurrentLinkedHashMap<>(11);
+        ConcurrentHashMapWithLinkedLists<String, Integer> map = new ConcurrentHashMapWithLinkedLists<>(11);
 
         // Test Add and Get methods
         System.out.println("\n Test Add");
@@ -52,7 +52,7 @@ public class TestConcurrentLinkedHashMap {
         System.out.println("Is the map empty? " + map.isEmpty());
         System.out.println("Size of map: " + map.size());
 
-        ConcurrentLinkedHashMap<String, Integer> copyMap = new ConcurrentLinkedHashMap<>(16);
+        ConcurrentHashMapWithLinkedLists<String, Integer> copyMap = new ConcurrentHashMapWithLinkedLists<>(11);
         map.copy(copyMap);
         System.out.println("Size of copyMap: " + copyMap.size());
 
