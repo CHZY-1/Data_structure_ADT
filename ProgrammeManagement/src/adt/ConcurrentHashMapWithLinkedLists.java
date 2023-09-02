@@ -412,7 +412,7 @@ public class ConcurrentHashMapWithLinkedLists<K, V> implements MapInterface<K, V
             }
             Entry<K, V> entry = currentBucketIterator.next();
             if (!currentBucketIterator.hasNext()) {
-                currentBucketIndex++; // Move to the next bucket
+                currentBucketIndex++; // Increment after moving to the next bucket
                 moveToNextBucket(); // Move to the next non-empty bucket
             }
             return entry.getKey();

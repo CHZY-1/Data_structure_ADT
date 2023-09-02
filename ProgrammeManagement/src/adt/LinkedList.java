@@ -5,9 +5,9 @@ import java.util.NoSuchElementException;
 
 /**
  * Chapter 5 Sample Code
- * LinkedList.java A class that implements the ADT list by using a chain of nodes, with the node implemented as an inner class.
+ * LinkedList.java A class that implements the ADT list by using a chain of nodes, with the node implemented as an inner class.*
  *
- * Added Iterator
+ * Chan Zhi Yang - Modified LinkedList (Added Iterator)
  *
  */
 public class LinkedList<T> implements ListInterface<T> {
