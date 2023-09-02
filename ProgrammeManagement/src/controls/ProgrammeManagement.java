@@ -1,4 +1,5 @@
 package controls;
+
 import adt.ConcurrentHashMapWithLinkedLists;
 import adt.LinkedList;
 import entities.*;
@@ -6,13 +7,17 @@ import entities.*;
 import java.util.Iterator;
 
 /**
- *
  * @author Chan Zhi Yang
  */
+
 public class ProgrammeManagement {
+
+    // There are many programmes
     private ConcurrentHashMapWithLinkedLists<String, Programme> programmes;
 
     public ProgrammeManagement() {
+
+        // Create the data structure with default capacity 31 and load factor of 0.75
         programmes = new ConcurrentHashMapWithLinkedLists<>();
     }
 
@@ -22,15 +27,7 @@ public class ProgrammeManagement {
     }
 
     public Programme removeProgramme(String programmeCode) {
-
-        Programme programmeRemoved = programmes.remove(programmeCode);
-
-//        if(programmes.isEmpty()){
-//            programmes = new ConcurrentHashMapWithLinkedLists<>();
-//        }
-
-        return programmeRemoved;
-
+        return programmes.remove(programmeCode);
     }
 
     public Programme findProgramme(String programmeCode) {
@@ -40,22 +37,18 @@ public class ProgrammeManagement {
     public boolean amendProgrammeDetails(String programmeCode, String newProgrammeName) {
         Programme programme = programmes.getValue(programmeCode);
 
+        // check if programme exists
         if (programme != null) {
             programme.setProgrammeName(newProgrammeName);
             return true;
         }else{
             return false;
         }
-
-    }
-
-    public ConcurrentHashMapWithLinkedLists<String, Programme> getProgrammes() {
-        return programmes;
     }
 
     public void listAllProgramme(){
 
-        Iterator<String> iterator = programmes.iteratorWithKeys();
+        Iterator<String> iterator = programmes.iteratorWithKeys(); // Concurrent HashMap Iterator
 
         if(!iterator.hasNext()){
             System.out.println("No programme existing in the system yet");
@@ -68,10 +61,8 @@ public class ProgrammeManagement {
 
                 System.out.print("{ Programme Code: " + programme.getProgrammeCode() + " , ");
                 System.out.println("Programme Name: " + programme.getProgrammeName() + " } ");
-
             }
         }
-
     }
 
     public boolean addTutorialGroupToProgramme(String programmeCode, TutorialGroup tutorialGroup) {

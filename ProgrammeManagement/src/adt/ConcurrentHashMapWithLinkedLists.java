@@ -45,6 +45,7 @@ public class ConcurrentHashMapWithLinkedLists<K, V> implements MapInterface<K, V
         this.locks = createLockArray(capacity);
     }
 
+    // Check if the number is prime number
     private boolean isPrime(int number) {
         if (number <= 1) {
             return false;
@@ -63,8 +64,7 @@ public class ConcurrentHashMapWithLinkedLists<K, V> implements MapInterface<K, V
         return true;
     }
 
-
-    // Private method to create the bucket array
+    // Method to create the bucket array
     private LinkedList<Entry<K, V>>[] createBucketArray(int capacity) {
         LinkedList<Entry<K, V>>[] buckets = new LinkedList[capacity];
         for (int i = 0; i < capacity; i++) {
@@ -73,7 +73,7 @@ public class ConcurrentHashMapWithLinkedLists<K, V> implements MapInterface<K, V
         return buckets;
     }
 
-    // Private method to create the lock array
+    // Method to create the lock array
     private ReentrantLock[] createLockArray(int capacity) {
         ReentrantLock[] locks = new ReentrantLock[capacity];
         for (int i = 0; i < capacity; i++) {
@@ -87,26 +87,33 @@ public class ConcurrentHashMapWithLinkedLists<K, V> implements MapInterface<K, V
     @Override
     public V put(K key, V value) {
 
+        // Hashed Index
         int bucketIndex = getBucketIndex(key);
         Entry<K, V> newEntry = new Entry<>(key, value);
 
+        // Get specific bucket based on hashed index
         LinkedList<Entry<K, V>> bucket = buckets[bucketIndex];
+
+        // Get the lock for that bucket
         ReentrantLock lock = locks[bucketIndex];
 
         lock.lock();
         try {
 
+            // Replace the value if same key already exists
+            // Remove this block to allow duplicate key store in the linked list
             Iterator<Entry<K, V>> iterator = bucket.iterator();
             while (iterator.hasNext()) {
                 Entry<K, V> entry = iterator.next();
 
+                // if same key is found
                 if (entry.getKey().equals(key)) {
+                    // replace value
                     V oldValue = entry.getValue();
                     entry.setValue(value);
                     return oldValue;
                 }
             }
-
 
             bucket.add(newEntry);
             totalNumberOfEntries++;
@@ -128,19 +135,25 @@ public class ConcurrentHashMapWithLinkedLists<K, V> implements MapInterface<K, V
 //        System.out.println("Hash Value in getValue method : " + bucketIndex);
 
         LinkedList<Entry<K, V>> bucket = buckets[bucketIndex];
+
         synchronized (buckets[bucketIndex]) {
             Iterator<Entry<K, V>> iterator = bucket.iterator();
+
+            // iterate through bucket
             while (iterator.hasNext()) {
                 Entry<K, V> entry = iterator.next();
                 if (entry.getKey().equals(key)) {
+                    // return value if the key is found
                     return entry.getValue();
                 }
             }
         }
 
+        // key not exists
         return null;
     }
 
+    //  Return default value if key not exists
     @Override
     public V getOrDefault(K key, V defaultValue) {
         V value = getValue(key);
@@ -154,12 +167,18 @@ public class ConcurrentHashMapWithLinkedLists<K, V> implements MapInterface<K, V
 //        System.out.println("Hash Value in replace method : " + bucketIndex);
 
         LinkedList<Entry<K, V>> bucket = buckets[bucketIndex];
+
         synchronized (buckets[bucketIndex]) {
             Iterator<Entry<K, V>> iterator = bucket.iterator();
 
+            // Iterate through bucket
             while (iterator.hasNext()) {
                 Entry<K, V> entry = iterator.next();
+
+                // if same key is found
                 if (entry.getKey().equals(key)) {
+
+                    //replace the value
                     entry.setValue(value);
                     return true;
                 }
@@ -171,19 +190,29 @@ public class ConcurrentHashMapWithLinkedLists<K, V> implements MapInterface<K, V
 
     @Override
     public V remove(K key) {
+
+        // Hashed Index
         int bucketIndex = getBucketIndex(key);
 
+        // Get specific bucket based on hashed index
         LinkedList<Entry<K, V>> bucket = buckets[bucketIndex];
+
         synchronized (buckets[bucketIndex]) {
             Iterator<Entry<K, V>> iterator = bucket.iterator();
+
+            // Iterate through bucket
             while (iterator.hasNext()) {
                 Entry<K, V> entry = iterator.next();
+
+                // if the entry is not null and the key is already exist in the Hash Map
                 if (entry != null && entry.getKey().equals(key)) {
+
+                    // Remove the Node
                     iterator.remove();
                     totalNumberOfEntries--;
 
                     if (bucket.isEmpty()) {
-                        // Reinitialize the bucket
+                        // Reinitialize the bucket if it is empty
                         buckets[bucketIndex] = new LinkedList<>();
                     }
 
@@ -195,6 +224,7 @@ public class ConcurrentHashMapWithLinkedLists<K, V> implements MapInterface<K, V
         return null;
     }
 
+    // Check if the key Exists in Map
     @Override
     public boolean containsKey(K key) {
         int bucketIndex = getBucketIndex(key);
@@ -216,19 +246,24 @@ public class ConcurrentHashMapWithLinkedLists<K, V> implements MapInterface<K, V
 
     @Override
     public boolean isEmpty() {
+
+        // Iterate through all the buckets
         for (LinkedList<Entry<K, V>> bucket : buckets) {
             synchronized (bucket) {
                 if (!bucket.isEmpty()) {
+                    // Return False if found any bucket is not empty
                     return false;
                 }
             }
         }
+
+        // Return True if all the bucket is empty
         return true;
     }
 
     @Override
     public boolean isFull() {
-        // Linked list implementation doesn't have a fixed capacity
+        // The capacity will expand automatically
         return false;
     }
 
@@ -237,6 +272,7 @@ public class ConcurrentHashMapWithLinkedLists<K, V> implements MapInterface<K, V
         return totalNumberOfEntries;
     }
 
+    // Clear All bucket
     @Override
     public void clear() {
         for (LinkedList<Entry<K, V>> bucket : buckets) {
@@ -248,12 +284,17 @@ public class ConcurrentHashMapWithLinkedLists<K, V> implements MapInterface<K, V
 
     @Override
     public void copy(MapInterface<K, V> destination) {
+
         if (destination instanceof ConcurrentHashMapWithLinkedLists<K, V> destMap) {
+
             for (LinkedList<Entry<K, V>> bucket : buckets) {
                 synchronized (bucket) {
                     Iterator<Entry<K, V>> iterator = bucket.iterator();
+
                     while (iterator.hasNext()) {
                         Entry<K, V> entry = iterator.next();
+
+                        // Copy the entry into destination
                         destMap.put(entry.getKey(), entry.getValue());
                     }
                 }
@@ -268,11 +309,12 @@ public class ConcurrentHashMapWithLinkedLists<K, V> implements MapInterface<K, V
     //    Rehash the map when load factor exceed threshold
     private void rehash() {
         System.out.println("Rehashing");
-        int newCapacity = capacity * 2;
+        int newCapacity = capacity * 2; // Double the capacity
 
         LinkedList<Entry<K, V>>[] newBuckets = new LinkedList[newCapacity];
         ReentrantLock[] newLocks = new ReentrantLock[newCapacity];
 
+        // Reinitialize buckets and locks arrays
         for (int i = 0; i < newCapacity; i++) {
             newBuckets[i] = new LinkedList<>();
             newLocks[i] = new ReentrantLock();
@@ -321,7 +363,7 @@ public class ConcurrentHashMapWithLinkedLists<K, V> implements MapInterface<K, V
     }
 
     // Default Hash Function
-    // in case require to develop a custom hash function.
+    // In case require to develop a custom hash function.
     private int computeHashCode(K key) {
         if (key == null) {
             return 0;
