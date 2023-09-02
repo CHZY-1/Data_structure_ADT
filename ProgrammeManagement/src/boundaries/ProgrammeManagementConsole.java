@@ -23,6 +23,7 @@ public class ProgrammeManagementConsole{
         scanner = new Scanner(System.in);
     }
 
+    // Start UI
     public void start() {
         boolean isRunning = true;
 
@@ -46,6 +47,7 @@ public class ProgrammeManagementConsole{
         System.out.println("Programme Management System has been terminated.");
     }
 
+    // Sub-menu - Programme Management
     private void manageProgrammes() {
         boolean isRunning = true;
 
@@ -80,6 +82,7 @@ public class ProgrammeManagementConsole{
         }
     }
 
+    // Sub-menu - Manage Tutorial Group in Programme
     private void manageTutorialGroups() {
         boolean isRunning = true;
 
@@ -108,6 +111,7 @@ public class ProgrammeManagementConsole{
         }
     }
 
+    // Read User choice for menu
     private static int getUserChoice(Scanner scanner) {
         int choice = -1;
         boolean isValidInput = false;
@@ -126,6 +130,7 @@ public class ProgrammeManagementConsole{
         return choice;
     }
 
+    // Sample data to test
     private void addSampleProgramme(){
         programmeManagement.addProgramme("RCS", "Computer Science");
         programmeManagement.addProgramme("RDS", "Data Science");
@@ -140,6 +145,7 @@ public class ProgrammeManagementConsole{
         programmeManagement.addTutorialGroupToProgramme("RDS", new TutorialGroup("DS-G002", "Data Science Group 2", "2"));
     }
 
+    // Add programme
     private void addProgramme() {
         System.out.print("Enter Programme Code: ");
         String programmeCode = scanner.nextLine().trim();
@@ -151,6 +157,7 @@ public class ProgrammeManagementConsole{
 
     }
 
+    // Remove programme
     private void removeProgramme() {
         System.out.print("Enter Programme Code to remove: ");
         String programmeCode = scanner.nextLine().trim();
@@ -163,6 +170,7 @@ public class ProgrammeManagementConsole{
         }
     }
 
+    // Retrieve programme
     private void findProgramme() {
         System.out.print("Enter Programme Code to find: ");
         String programmeCode = scanner.nextLine().trim();
@@ -175,6 +183,7 @@ public class ProgrammeManagementConsole{
         }
     }
 
+    // Modify programme, modify programme name
     private void amendProgrammeDetails() {
         System.out.print("Enter Programme Code to amend details: ");
         String programmeCode = scanner.nextLine().trim();
@@ -197,10 +206,12 @@ public class ProgrammeManagementConsole{
         }
     }
 
+    // List all programme in the system
     private void listAllProgrammes() {
         programmeManagement.listAllProgramme();
     }
 
+    // Add tutorial group to a particular programme
     private void addTutorialGroupToProgramme() {
         System.out.print("Enter Programme Code that you want to add the Tutorial Group to: ");
         String programmeCode = scanner.nextLine().trim();
@@ -232,6 +243,7 @@ public class ProgrammeManagementConsole{
 
     }
 
+    // Remove tutorial group from a particular programme
     private void removeTutorialGroupFromProgramme() {
 
         TutorialGroup removedGroup;
@@ -258,6 +270,7 @@ public class ProgrammeManagementConsole{
 
     }
 
+    // List all tutorial group from a particular programme
     private void listAllTutorialGroupsForProgramme() {
 
         System.out.print("Enter Programme Code that you want to list all Tutorial Group: ");
@@ -270,11 +283,12 @@ public class ProgrammeManagementConsole{
         }
     }
 
+    // Report to show all programme with tutorial group
     private void generateReports() {
         programmeManagement.generateReport();
     }
 
-
+    
     public static void main(String[] args) {
         ProgrammeManagementConsole ui = new ProgrammeManagementConsole();
         ui.start();
