@@ -118,12 +118,15 @@ public class ProgrammeManagement {
         }
     }
 
-    public void generateReport(){
-
+    public void generateReport() {
         Iterator<String> programmeIterator = programmes.iteratorWithKeys();
 
-        if(programmeIterator.hasNext()){
+        if (!programmeIterator.hasNext()) {
+            System.out.println("No programmes exist in the system yet");
+            return;
+        }
 
+        if (programmeIterator.hasNext()) {
             System.out.println("\n\n               Programme Management Report");
             System.out.println("===============================================================================");
 
@@ -133,18 +136,20 @@ public class ProgrammeManagement {
                 String programCode = programmeIterator.next();
                 Programme programme = programmes.getValue(programCode);
 
+                // Print headings
                 System.out.println("\nProgramme " + programmeCounter);
                 System.out.println("-----------------------------------------------");
                 System.out.println("Programme Code: " + programme.getProgrammeCode());
                 System.out.println("Programme Name: " + programme.getProgrammeName());
                 System.out.println("Total Tutorial Groups: " + programme.getTutorialGroups().getNumberOfEntries());
 
-
                 LinkedList<TutorialGroup> tutorialGroups = programme.getTutorialGroups();
 
                 if (tutorialGroups != null && !tutorialGroups.isEmpty()) {
-                    System.out.println("\nTutorial Groups:");
+                    System.out.println("\nTutorial Groups for " + programme.getProgrammeCode() + " :");
                     System.out.println("=======================================");
+                    System.out.printf("%-5s %-20s %-30s %-15s%n", "No.", "Group ID", "Group Name", "Study Year");
+                    System.out.println("---------------------------------------------------------------");
 
                     Iterator<TutorialGroup> tutorialGroupIterator = tutorialGroups.iterator();
 
@@ -153,26 +158,20 @@ public class ProgrammeManagement {
                     while (tutorialGroupIterator.hasNext()) {
                         TutorialGroup tutorialGroup = tutorialGroupIterator.next();
 
-                        System.out.println("Tutorial Group " + tutorialGroupCounter);
-                        System.out.println("---------------------------------------------");
-                        System.out.println("- Tutorial Group ID: " + tutorialGroup.getGroupID());
-                        System.out.println("  Tutorial Group Name: " + tutorialGroup.getGroupName());
-                        System.out.println("  Tutorial Group Study Year: " + tutorialGroup.getStudyYear() + "\n");
+                        System.out.printf("%-5d %-20s %-30s %-15s%n", tutorialGroupCounter, tutorialGroup.getGroupID(),
+                                tutorialGroup.getGroupName(), tutorialGroup.getStudyYear());
 
                         tutorialGroupCounter++;
                     }
                 } else {
-                    System.out.println("No Tutorial Groups for this program.");
+                    System.out.println("No Tutorial Groups for this programme.");
                 }
 
                 programmeCounter++;
             }
-
-        }else{
-            System.out.println("No programme exists in the system yet");
+        } else {
+            System.out.println("No programmes exist in the system yet");
         }
-
-
     }
 
 }
