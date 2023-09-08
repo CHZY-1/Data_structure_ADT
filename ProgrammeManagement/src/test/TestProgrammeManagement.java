@@ -14,8 +14,8 @@ public class TestProgrammeManagement {
         programmeManager.addProgramme("P002", "Electrical Engineering");
 
         // List all programmes
-        System.out.println(" List of Programmes:");
-        programmeManager.listAllProgramme();
+//        System.out.println(" List of Programmes:");
+//        programmeManager.listAllProgramme();
 
         // Create some tutorial groups
         TutorialGroup group1 = new TutorialGroup("T001", "Group 1", "2023");
@@ -26,8 +26,8 @@ public class TestProgrammeManagement {
         programmeManager.addTutorialGroupToProgramme("P002", group2);
 
         // List all tutorial groups for a programme
-        System.out.println("\n Tutorial Groups for Programme P001:");
-        programmeManager.listAllTutorialGroupsForProgramme("P001");
+//        System.out.println("\n Tutorial Groups for Programme P001:");
+//        programmeManager.listAllTutorialGroupsForProgramme("P001");
 
         // Remove a tutorial group from a programme
         TutorialGroup removedGroup = programmeManager.removeTutorialGroupFromProgramme("P001", "T001");
@@ -40,7 +40,7 @@ public class TestProgrammeManagement {
         }
 
         // List all tutorial groups for a programme after removal
-        System.out.println("Tutorial Groups for Programme P001 after Removal:");
-        programmeManager.listAllTutorialGroupsForProgramme("P001");
+//        System.out.println("Tutorial Groups for Programme P001 after Removal:");
+//        programmeManager.listAllTutorialGroupsForProgramme("P001");
     }
 }

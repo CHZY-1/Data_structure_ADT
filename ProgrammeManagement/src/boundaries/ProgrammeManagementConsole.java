@@ -333,11 +333,6 @@ public class ProgrammeManagementConsole{
     private void generateReports() {
         Iterator<String> programmeIterator = programmeManagement.getAllProgrammesIterator();
 
-        if (!programmeIterator.hasNext()) {
-            System.out.println("No programmes exist in the system yet");
-            return;
-        }
-
         if (programmeIterator.hasNext()) {
             System.out.println("\n\n               Programme Management Report");
             System.out.println("===============================================================================");
