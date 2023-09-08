@@ -1,7 +1,7 @@
 package controls;
 
 import adt.ConcurrentHashMapWithLinkedLists;
-import adt.LinkedList;
+import adt.MapInterface;
 import entities.*;
 
 import java.util.Iterator;
@@ -13,7 +13,7 @@ import java.util.Iterator;
 public class ProgrammeManagement {
 
     // There are many programmes
-    private ConcurrentHashMapWithLinkedLists<String, Programme> programmes;
+    private MapInterface<String, Programme> programmes;
 
     public ProgrammeManagement() {
 
@@ -70,7 +70,7 @@ public class ProgrammeManagement {
     }
 
     public Iterator getAllProgrammesIterator(){
-        return programmes.iteratorWithKeys();
+        return ((ConcurrentHashMapWithLinkedLists<String, Programme>) programmes).iteratorWithKeys();
     }
 
 

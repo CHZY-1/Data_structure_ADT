@@ -11,9 +11,17 @@ public class ConcurrentHashMapWithLinkedLists<K, V> implements MapInterface<K, V
     private static final int DEFAULT_CAPACITY = 31;
     private static final float DEFAULT_LOAD_FACTOR = 0.75f;
 
+    // Array of linked lists that store key, value pairs
+    // Using concrete type LinkedList<Entry<K, V>>, not expected to change the type in this class
     private LinkedList<Entry<K, V>>[] buckets;
+
+    // Array of locks for each bucket
     private ReentrantLock[] locks;
+
+    // Capacity of the hash table (number of buckets)
     private int capacity;
+
+    // Determine when the hash table should resize
     private final float loadFactor;
 
     private int totalNumberOfEntries;
@@ -415,6 +423,7 @@ public class ConcurrentHashMapWithLinkedLists<K, V> implements MapInterface<K, V
                 currentBucketIndex++; // Increment after moving to the next bucket
                 moveToNextBucket(); // Move to the next non-empty bucket
             }
+            // Return the key only
             return entry.getKey();
         }
     }
