@@ -46,25 +46,6 @@ public class ProgrammeManagement {
         }
     }
 
-    public void listAllProgramme(){
-
-        Iterator<String> iterator = programmes.iteratorWithKeys(); // Concurrent HashMap Iterator
-
-        if(!iterator.hasNext()){
-            System.out.println("No programme existing in the system yet");
-        }else{
-            System.out.println("  All Programmes ");
-            System.out.println("==========================================================");
-            while (iterator.hasNext()) {
-                String programKey = iterator.next();
-                Programme programme = programmes.getValue(programKey);
-
-                System.out.print("{ Programme Code: " + programme.getProgrammeCode() + " , ");
-                System.out.println("Programme Name: " + programme.getProgrammeName() + " } ");
-            }
-        }
-    }
-
     public boolean addTutorialGroupToProgramme(String programmeCode, TutorialGroup tutorialGroup) {
         Programme programme = programmes.getValue(programmeCode);
 
@@ -88,90 +69,9 @@ public class ProgrammeManagement {
         return null;
     }
 
-    public void listAllTutorialGroupsForProgramme(String programmeCode) {
-        Programme programme = programmes.getValue(programmeCode);
-
-        if (programme != null) {
-            LinkedList<TutorialGroup> tutorialGroups = programme.getTutorialGroups();
-
-            if (tutorialGroups != null) {
-                Iterator<TutorialGroup> iterator = tutorialGroups.iterator();
-
-                if(iterator.hasNext()){
-
-                    System.out.println("   All Tutorial Groups for " + programmeCode);
-                    System.out.println("===============================================");
-
-                    while (iterator.hasNext()) {
-                        TutorialGroup group = iterator.next();
-                        System.out.print("{ ");
-                        System.out.print("Tutorial Group ID: " + group.getGroupID() + " , ");
-                        System.out.print("Tutorial Group Name: " + group.getGroupName() + " , ");
-                        System.out.print("Tutorial Group Study Year: " + group.getStudyYear());
-                        System.out.println(" } ");
-                    }
-
-                }else{
-                    System.out.println("No Tutorial Group exists in this Programme, Programme Code : " + programmeCode);
-                }
-            }
-        }
+    public Iterator getAllProgrammesIterator(){
+        return programmes.iteratorWithKeys();
     }
 
-    public void generateReport() {
-        Iterator<String> programmeIterator = programmes.iteratorWithKeys();
-
-        if (!programmeIterator.hasNext()) {
-            System.out.println("No programmes exist in the system yet");
-            return;
-        }
-
-        if (programmeIterator.hasNext()) {
-            System.out.println("\n\n               Programme Management Report");
-            System.out.println("===============================================================================");
-
-            int programmeCounter = 1;
-
-            while (programmeIterator.hasNext()) {
-                String programCode = programmeIterator.next();
-                Programme programme = programmes.getValue(programCode);
-
-                // Print headings
-                System.out.println("\nProgramme " + programmeCounter);
-                System.out.println("-----------------------------------------------");
-                System.out.println("Programme Code: " + programme.getProgrammeCode());
-                System.out.println("Programme Name: " + programme.getProgrammeName());
-                System.out.println("Total Tutorial Groups: " + programme.getTutorialGroups().getNumberOfEntries());
-
-                LinkedList<TutorialGroup> tutorialGroups = programme.getTutorialGroups();
-
-                if (tutorialGroups != null && !tutorialGroups.isEmpty()) {
-                    System.out.println("\nTutorial Groups for " + programme.getProgrammeCode() + " :");
-                    System.out.println("=======================================");
-                    System.out.printf("%-5s %-20s %-30s %-15s%n", "No.", "Group ID", "Group Name", "Study Year");
-                    System.out.println("---------------------------------------------------------------");
-
-                    Iterator<TutorialGroup> tutorialGroupIterator = tutorialGroups.iterator();
-
-                    int tutorialGroupCounter = 1;
-
-                    while (tutorialGroupIterator.hasNext()) {
-                        TutorialGroup tutorialGroup = tutorialGroupIterator.next();
-
-                        System.out.printf("%-5d %-20s %-30s %-15s%n", tutorialGroupCounter, tutorialGroup.getGroupID(),
-                                tutorialGroup.getGroupName(), tutorialGroup.getStudyYear());
-
-                        tutorialGroupCounter++;
-                    }
-                } else {
-                    System.out.println("No Tutorial Groups for this programme.");
-                }
-
-                programmeCounter++;
-            }
-        } else {
-            System.out.println("No programmes exist in the system yet");
-        }
-    }
 
 }

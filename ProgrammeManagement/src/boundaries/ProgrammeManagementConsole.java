@@ -1,8 +1,10 @@
 package boundaries;
 
 import java.util.InputMismatchException;
+import java.util.Iterator;
 import java.util.Scanner;
 
+import adt.LinkedList;
 import controls.ProgrammeManagement;
 import entities.Programme;
 import entities.TutorialGroup;
@@ -208,7 +210,23 @@ public class ProgrammeManagementConsole{
 
     // List all programme in the system
     private void listAllProgrammes() {
-        programmeManagement.listAllProgramme();
+
+        Iterator<String> iterator = programmeManagement.getAllProgrammesIterator();
+
+        if(!iterator.hasNext()){
+            System.out.println("No programme existing in the system yet");
+        }else{
+            System.out.println("  All Programmes ");
+            System.out.println("==========================================================");
+            while (iterator.hasNext()) {
+                String programKey = iterator.next();
+                Programme programme = programmeManagement.findProgramme(programKey);
+
+                System.out.print("{ Programme Code: " + programme.getProgrammeCode() + " , ");
+                System.out.println("Programme Name: " + programme.getProgrammeName() + " } ");
+            }
+        }
+
     }
 
     // Add tutorial group to a particular programme
@@ -277,7 +295,35 @@ public class ProgrammeManagementConsole{
         String programmeCode = scanner.nextLine().trim();
 
         if(programmeManagement.findProgramme(programmeCode) != null){
-            programmeManagement.listAllTutorialGroupsForProgramme(programmeCode);
+
+            Programme programme = programmeManagement.findProgramme(programmeCode);
+
+            if (programme != null) {
+                LinkedList<TutorialGroup> tutorialGroups = programme.getTutorialGroups();
+
+                if (tutorialGroups != null) {
+                    Iterator<TutorialGroup> iterator = tutorialGroups.iterator();
+
+                    if(iterator.hasNext()){
+
+                        System.out.println("   All Tutorial Groups for " + programmeCode);
+                        System.out.println("===============================================");
+
+                        while (iterator.hasNext()) {
+                            TutorialGroup group = iterator.next();
+                            System.out.print("{ ");
+                            System.out.print("Tutorial Group ID: " + group.getGroupID() + " , ");
+                            System.out.print("Tutorial Group Name: " + group.getGroupName() + " , ");
+                            System.out.print("Tutorial Group Study Year: " + group.getStudyYear());
+                            System.out.println(" } ");
+                        }
+
+                    }else{
+                        System.out.println("No Tutorial Group exists in this Programme, Programme Code : " + programmeCode);
+                    }
+                }
+            }
+
         }else{
             System.out.println("This Programme is not exists in the system, Programme Code : " + programmeCode);
         }
@@ -285,7 +331,54 @@ public class ProgrammeManagementConsole{
 
     // Report to show all programme with tutorial group
     private void generateReports() {
-        programmeManagement.generateReport();
+        Iterator<String> programmeIterator = programmeManagement.getAllProgrammesIterator();
+
+        if (programmeIterator.hasNext()) {
+            System.out.println("\n\n               Programme Management Report");
+            System.out.println("===============================================================================");
+
+            int programmeCounter = 1;
+
+            while (programmeIterator.hasNext()) {
+                String programCode = programmeIterator.next();
+                Programme programme = programmeManagement.findProgramme(programCode);
+
+                // Print headings
+                System.out.println("\nProgramme " + programmeCounter);
+                System.out.println("-----------------------------------------------");
+                System.out.println("Programme Code: " + programme.getProgrammeCode());
+                System.out.println("Programme Name: " + programme.getProgrammeName());
+                System.out.println("Total Tutorial Groups: " + programme.getTutorialGroups().getNumberOfEntries());
+
+                LinkedList<TutorialGroup> tutorialGroups = programme.getTutorialGroups();
+
+                if (tutorialGroups != null && !tutorialGroups.isEmpty()) {
+                    System.out.println("\nTutorial Groups for " + programme.getProgrammeCode() + " :");
+                    System.out.println("=======================================");
+                    System.out.printf("%-5s %-20s %-30s %-15s%n", "No.", "Group ID", "Group Name", "Study Year");
+                    System.out.println("---------------------------------------------------------------");
+
+                    Iterator<TutorialGroup> tutorialGroupIterator = tutorialGroups.iterator();
+
+                    int tutorialGroupCounter = 1;
+
+                    while (tutorialGroupIterator.hasNext()) {
+                        TutorialGroup tutorialGroup = tutorialGroupIterator.next();
+
+                        System.out.printf("%-5d %-20s %-30s %-15s%n", tutorialGroupCounter, tutorialGroup.getGroupID(),
+                                tutorialGroup.getGroupName(), tutorialGroup.getStudyYear());
+
+                        tutorialGroupCounter++;
+                    }
+                } else {
+                    System.out.println("No Tutorial Groups for this programme.");
+                }
+
+                programmeCounter++;
+            }
+        } else {
+            System.out.println("No programmes exist in the system yet");
+        }
     }
 
 
