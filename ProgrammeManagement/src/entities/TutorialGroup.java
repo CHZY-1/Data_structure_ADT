@@ -1,7 +1,6 @@
 package entities;
 
 /**
- *
  * @author Chan Zhi Yang
  */
 

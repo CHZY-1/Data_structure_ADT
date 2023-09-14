@@ -1,18 +1,20 @@
 package entities;
 
 import adt.LinkedList;
+import adt.ListInterface;
 
 import java.util.Iterator;
 
 /**
- *
  * @author Chan Zhi Yang
+ *
+ * Used the LinkedList from the sample code
  */
 
 public class Programme {
     private String programmeCode;
     private String programmeName;
-    private LinkedList<TutorialGroup> tutorialGroups;
+    private ListInterface<TutorialGroup> tutorialGroups;
 
     public Programme(String programmeCode, String programmeName) {
         this.programmeCode = programmeCode;
@@ -27,7 +29,7 @@ public class Programme {
     public TutorialGroup removeTutorialGroup(String groupID) {
         TutorialGroup removedGroup = null;
 
-        Iterator iterator = tutorialGroups.iterator();
+        Iterator iterator = ((LinkedList<TutorialGroup>)tutorialGroups).iterator();
 
         while (iterator.hasNext()) {
             TutorialGroup currentGroup = (TutorialGroup) iterator.next();
@@ -41,10 +43,9 @@ public class Programme {
         return removedGroup;
     }
 
-    public LinkedList<TutorialGroup> getTutorialGroups() {
+    public ListInterface<TutorialGroup> getTutorialGroups() {
         return tutorialGroups;
     }
-
 
     //Getters and Setters
     public String getProgrammeCode() {

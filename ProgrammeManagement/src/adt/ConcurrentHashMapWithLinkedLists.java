@@ -1,6 +1,8 @@
 package adt;
 
-//Author: Chan Zhi Yang
+// Author: Chan Zhi Yang
+// Used the LinkedList from the sample code and added a custom iterator.
+
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -371,7 +373,7 @@ public class ConcurrentHashMapWithLinkedLists<K, V> implements MapInterface<K, V
     }
 
     // Default Hash Function
-    // In case require to develop a custom hash function.
+    // If required to develop a custom hash function.
     private int computeHashCode(K key) {
         if (key == null) {
             return 0;
