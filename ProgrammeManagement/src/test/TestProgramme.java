@@ -29,7 +29,7 @@ public class TestProgramme {
 
         // List all tutorial groups for a program
         System.out.println("\nTutorial Groups for " + program1.getProgrammeName() + ":");
-        LinkedList<TutorialGroup> groupsForProgram1 = program1.getTutorialGroups();
+        LinkedList<TutorialGroup> groupsForProgram1 = (LinkedList<TutorialGroup>)program1.getTutorialGroups();
 
         Iterator iteratorForProgram1 = groupsForProgram1.iterator();
 

@@ -10,9 +10,7 @@ import entities.Programme;
 import entities.TutorialGroup;
 
 /**
- *
  * @author Chan Zhi Yang
- *
  */
 
 public class ProgrammeManagementConsole{
@@ -94,6 +92,7 @@ public class ProgrammeManagementConsole{
             System.out.println("2. Remove a Tutorial Group from a Programme");
             System.out.println("3. List All Tutorial Groups for a Programme");
             System.out.println("4. Add Sample Tutorial Group to Programmes");
+            System.out.println("5. Generate Report");
             System.out.println("0. Back to Main Menu");
             System.out.print("Enter your choice: ");
 
@@ -107,6 +106,7 @@ public class ProgrammeManagementConsole{
                     addSampleTutorialGroupToProgramme();
                     System.out.println("Sample Tutorial Group added");
                 }
+                case 5 -> generateReports();
                 case 0 -> isRunning = false;
                 default -> System.out.println("Invalid choice. Please try again.");
             }
@@ -211,6 +211,8 @@ public class ProgrammeManagementConsole{
     // List all programme in the system
     private void listAllProgrammes() {
 
+        int count = 1;
+
         Iterator<String> iterator = programmeManagement.getAllProgrammesIterator();
 
         if(!iterator.hasNext()){
@@ -222,8 +224,9 @@ public class ProgrammeManagementConsole{
                 String programKey = iterator.next();
                 Programme programme = programmeManagement.findProgramme(programKey);
 
-                System.out.print("{ Programme Code: " + programme.getProgrammeCode() + " , ");
-                System.out.println("Programme Name: " + programme.getProgrammeName() + " } ");
+                System.out.print(count + " [ Programme Code: " + programme.getProgrammeCode() + " , ");
+                System.out.println("Programme Name: " + programme.getProgrammeName() + " ] ");
+                count++;
             }
         }
 
@@ -296,10 +299,12 @@ public class ProgrammeManagementConsole{
 
         if(programmeManagement.findProgramme(programmeCode) != null){
 
+            int count = 0;
+
             Programme programme = programmeManagement.findProgramme(programmeCode);
 
             if (programme != null) {
-                LinkedList<TutorialGroup> tutorialGroups = programme.getTutorialGroups();
+                LinkedList<TutorialGroup> tutorialGroups = (LinkedList<TutorialGroup>)programme.getTutorialGroups();
 
                 if (tutorialGroups != null) {
                     Iterator<TutorialGroup> iterator = tutorialGroups.iterator();
@@ -311,11 +316,11 @@ public class ProgrammeManagementConsole{
 
                         while (iterator.hasNext()) {
                             TutorialGroup group = iterator.next();
-                            System.out.print("{ ");
+                            System.out.print(count + " [ ");
                             System.out.print("Tutorial Group ID: " + group.getGroupID() + " , ");
                             System.out.print("Tutorial Group Name: " + group.getGroupName() + " , ");
                             System.out.print("Tutorial Group Study Year: " + group.getStudyYear());
-                            System.out.println(" } ");
+                            System.out.println(" ] ");
                         }
 
                     }else{
@@ -350,7 +355,7 @@ public class ProgrammeManagementConsole{
                 System.out.println("Programme Name: " + programme.getProgrammeName());
                 System.out.println("Total Tutorial Groups: " + programme.getTutorialGroups().getNumberOfEntries());
 
-                LinkedList<TutorialGroup> tutorialGroups = programme.getTutorialGroups();
+                LinkedList<TutorialGroup> tutorialGroups = (LinkedList<TutorialGroup>)programme.getTutorialGroups();
 
                 if (tutorialGroups != null && !tutorialGroups.isEmpty()) {
                     System.out.println("\nTutorial Groups for " + programme.getProgrammeCode() + " :");
@@ -371,7 +376,9 @@ public class ProgrammeManagementConsole{
                         tutorialGroupCounter++;
                     }
                 } else {
+                    System.out.println("=========================================");
                     System.out.println("No Tutorial Groups for this programme.");
+                    System.out.println("=========================================");
                 }
 
                 programmeCounter++;
