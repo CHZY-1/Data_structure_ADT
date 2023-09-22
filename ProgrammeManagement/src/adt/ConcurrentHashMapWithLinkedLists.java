@@ -55,17 +55,23 @@ public class ConcurrentHashMapWithLinkedLists<K, V> implements MapInterface<K, V
         this.locks = createLockArray(capacity);
     }
 
-    // Check if the number is prime number
+    // Check if the number is prime number by check whether it is divisible
     private boolean isPrime(int number) {
+        // if <= 1, not a prime number
         if (number <= 1) {
             return false;
         }
+        // if number = 2 or 3, it is a prime number
         if (number <= 3) {
             return true;
         }
+
+        // if divisible by 2 or 3 , not a prime number
         if (number % 2 == 0 || number % 3 == 0) {
             return false;
         }
+
+        // > 3, check whether number can divisible by 6k +- 1
         for (int i = 5; i * i <= number; i += 6) {
             if (number % i == 0 || number % (i + 2) == 0) {
                 return false;
